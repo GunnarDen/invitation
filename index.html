@@ -610,8 +610,8 @@
       </div>
       <div class="card">
         <span class="card-icon">💝</span>
-        <div class="card-title" style="color:var(--green)">Вместо цветов и подарков</div>
-        <p class="card-text">Вместо цветов, которые завянут, и подарков, которые пылятся на полке — подарите шаг к большой мечте.</p>
+        <div class="card-title" style="color:var(--green)">В копилку мечты</div>
+        <p class="card-text">Вместо цветов и подарков — подарите шаг к большой мечте.</p>
         <button class="btn btn-copy" onclick="copyCardNumber()">💳 Копировать номер карты</button>
       </div>
     </div>
@@ -1005,7 +1005,6 @@ function toggleDrinkOptions() {
   const colorBlock = document.getElementById('drink-color-block');
   const sweetnessBlock = document.getElementById('sweetness-block');
   
-  // Показываем выбор цвета только для вина и игристого
   if (drinks === 'wine' || drinks === 'sparkling' || drinks === 'both') {
     colorBlock.style.display = 'block';
     sweetnessBlock.style.display = 'block';
@@ -1032,16 +1031,21 @@ function selectAtt(val, btn) {
 
 document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const name = document.getElementById('rsvp-name').value;
+  
+  const name = document.getElementById('rsvp-name').value.trim();
   const att = document.getElementById('rsvp-att').value;
   const guests = document.getElementById('rsvp-guests').value;
   const drinks = document.getElementById('rsvp-drinks').value;
   const drinkColor = document.getElementById('rsvp-drink-color').value;
   const sweetness = document.getElementById('rsvp-sweetness').value;
 
-  if(!att) { alert('Выберите вариант участия!'); return; }
+  if (!att) { 
+    alert('Выберите вариант участия!'); 
+    return; 
+  }
 
-  const btn = this.querySelector('button');
+  const btn = this.querySelector('button[type="submit"]');
+  const originalText = btn.innerText;
   btn.innerText = 'Отправка...';
   btn.disabled = true;
 
@@ -1051,49 +1055,72 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
   if (drinks === 'wine') drinksText = '🍷 Вино';
   else if (drinks === 'sparkling') drinksText = '🥂 Игристое';
   else if (drinks === 'both') drinksText = '🍷🥂 И то, и другое';
-  else drinksText = '📝 Другое';
+  else if (drinks === 'other') drinksText = '📝 Другое';
+  else drinksText = '-';
 
   let colorText = '';
   if (drinkColor === 'red') colorText = '🔴 Красное';
   else if (drinkColor === 'white') colorText = '⚪ Белое';
   else if (drinkColor === 'rose') colorText = '🌸 Розовое';
+  else colorText = '-';
 
   let sweetnessText = '';
   if (sweetness === 'dry') sweetnessText = 'Сухое';
   else if (sweetness === 'semi-dry') sweetnessText = 'Полусухое';
   else if (sweetness === 'semi-sweet') sweetnessText = 'Полусладкое';
   else if (sweetness === 'sweet') sweetnessText = 'Сладкое';
+  else sweetnessText = '-';
 
   const message = `
 🎉 <b>Новый ответ RSVP!</b>
 👤 <b>Гость:</b> ${name}
 📝 <b>Статус:</b> ${status}
 👥 <b>Гостей:</b> ${att === 'yes' ? guests : 0}
-🍷 <b>Напитки:</b> ${att === 'yes' ? drinksText : '-'}
-🎨 <b>Цвет:</b> ${att === 'yes' && colorText ? colorText : '-'}
-🍇 <b>Сладость:</b> ${att === 'yes' && sweetnessText ? sweetnessText : '-'}
+🍷 <b>Напитки:</b> ${drinksText}
+🎨 <b>Цвет:</b> ${colorText}
+🍇 <b>Сладость:</b> ${sweetnessText}
   `.trim();
 
+  // Отправка в Telegram
   if (CONFIG.TG_BOT_TOKEN && CONFIG.TG_CHAT_ID) {
     try {
-      await fetch(`https://api.telegram.org/bot${CONFIG.TG_BOT_TOKEN}/sendMessage`, {
+      const tgResponse = await fetch(`https://api.telegram.org/bot${CONFIG.TG_BOT_TOKEN}/sendMessage`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           chat_id: CONFIG.TG_CHAT_ID,
           text: message,
           parse_mode: 'HTML'
         })
       });
+      
+      const tgResult = await tgResponse.json();
+      console.log('Telegram ответ:', tgResult);
+      
+      if (!tgResult.ok) {
+        console.error('Ошибка Telegram:', tgResult.description);
+      }
     } catch (err) {
-      console.error('Ошибка Telegram:', err);
+      console.error('Ошибка отправки в Telegram:', err);
     }
   }
 
+  // Сохранение в localStorage
   const localData = JSON.parse(localStorage.getItem('rsvp') || '[]');
-  localData.push({ name, att, guests, drinks, drinkColor, sweetness, date: new Date() });
+  localData.push({ 
+    name, 
+    att, 
+    guests: att === 'yes' ? guests : 0, 
+    drinks, 
+    drinkColor, 
+    sweetness, 
+    date: new Date().toISOString() 
+  });
   localStorage.setItem('rsvp', JSON.stringify(localData));
 
+  // Показываем сообщение об успехе
   document.getElementById('rsvpForm').style.display = 'none';
   document.getElementById('success-msg').style.display = 'block';
   fireConfetti();
