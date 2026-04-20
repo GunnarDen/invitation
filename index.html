@@ -315,6 +315,12 @@
       border: 2px solid white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    .dresscode-hint {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 15px;
+      font-style: italic;
+    }
 
     /* --- FORMS --- */
     .form-box {
@@ -365,6 +371,34 @@
       color: var(--green);
       font-weight: 700;
     }
+    .drink-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drink-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .drink-dot.wine { background: #8B0000; }
+    .drink-dot.sparkling { background: #F2C84B; }
+    .drink-color-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .drink-color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .drink-color-dot.red { background: #8B0000; }
+    .drink-color-dot.white { background: #F5E6A3; }
+    .drink-color-dot.rose { background: #FFB6C1; }
 
     /* --- MAP --- */
     .map-box {
@@ -535,7 +569,7 @@
     <span class="c-blue">Рита</span> <span style="color:#ddd">&</span> <span class="c-green">Денис</span>
   </h1>
   <div class="hero-dopamine">
-    <span style="color:var(--pink)">Д</span><span style="color:var(--yellow)">о</span><span style="color:var(--blue)">ф</span><span style="color:var(--green)">а</span><span style="color:var(--orange)">м</span><span style="color:var(--lavender)">и</span><span style="color:var(--pink)">н</span>
+    <span style="color:var(--pink)">Т</span><span style="color:var(--yellow)">ы</span><span style="color:var(--blue)"> </span><span style="color:var(--green)">м</span><span style="color:var(--orange)">о</span><span style="color:var(--lavender)">й</span><span style="color:var(--pink)"> </span><span style="color:var(--yellow)">Д</span><span style="color:var(--blue)">о</span><span style="color:var(--green)">ф</span><span style="color:var(--orange)">а</span><span style="color:var(--lavender)">м</span><span style="color:var(--pink)">и</span><span style="color:var(--yellow)">н</span>
   </div>
   <p class="hero-names">31 Июля 2026 • Красноярск</p>
   <div style="margin-top: 40px;">
@@ -565,18 +599,18 @@
     <h2 class="hero-title" style="font-size: 3rem; margin-bottom: 30px;">Детали</h2>
     <div class="grid-cards">
       <div class="card">
-        <span class="card-icon">📅</span>
+        <span class="card-icon">🗓️</span>
         <div class="card-title" style="color:var(--blue)">Когда</div>
         <p class="card-text">31 Июля 2026, Пятница<br>Сбор гостей в 15:00</p>
       </div>
       <div class="card">
         <span class="card-icon">📍</span>
         <div class="card-title" style="color:var(--orange)">Где</div>
-        <p class="card-text">Загородный клуб "Villatic"<br>Красноярск, Базайская 365/26</p>
+        <p class="card-text">Место событий "Villatic"<br>Красноярск, Базайская 365/26</p>
       </div>
       <div class="card">
-        <span class="card-icon">🎁</span>
-        <div class="card-title" style="color:var(--green)">В копилку мечты</div>
+        <span class="card-icon">💝</span>
+        <div class="card-title" style="color:var(--green)">Вместо цветов и подарков</div>
         <p class="card-text">Вместо цветов, которые завянут, и подарков, которые пылятся на полке — подарите шаг к большой мечте.</p>
         <button class="btn btn-copy" onclick="copyCardNumber()">💳 Копировать номер карты</button>
       </div>
@@ -604,6 +638,7 @@
   <div class="container fade-in-section">
     <h2 class="hero-title" style="font-size: 3rem; margin-bottom: 10px;">Дресс-код</h2>
     <p style="font-family:'Caveat'; font-size:1.4rem; color:#666;">Пастельная палитра лета</p>
+    <p class="dresscode-hint">💡 Нажмите на цвет, чтобы увидеть сочетания</p>
     <div class="colors">
       <div class="color-circle" style="background:#7BB8E8" data-name="Небесный" data-matches="#C9B8E8,#A8E6CF,#F2C84B"></div>
       <div class="color-circle" style="background:#8BBF5A" data-name="Олива" data-matches="#FFD3B6,#F2C84B,#7BB8E8"></div>
@@ -633,7 +668,6 @@
       <p style="color:#666; margin-bottom: 15px;">Красноярск, Базайская ул., 365/26</p>
       <a href="https://yandex.ru/maps/?text=Красноярск+Базайская+365/26" target="_blank" class="btn btn-primary map-link">🗺 Построить маршрут</a>
     </div>
-    <p style="color:#666; margin-top: 20px; font-size: 0.95rem;">Для гостей из других городов мы организуем трансфер.</p>
   </div>
 </section>
 
@@ -702,12 +736,21 @@
         </div>
         <div class="form-group" id="drinks-block" style="display:none;">
           <label>Предпочтения по напиткам 🍷</label>
-          <select id="rsvp-drinks" onchange="toggleSweetness()">
+          <select id="rsvp-drinks" onchange="toggleDrinkOptions()">
             <option value="">-- Выберите --</option>
-            <option value="wine">Вино</option>
-            <option value="sparkling">Игристое</option>
-            <option value="both">И то, и другое</option>
+            <option value="wine"><span class="drink-option"><span class="drink-dot wine"></span> Вино</span></option>
+            <option value="sparkling"><span class="drink-option"><span class="drink-dot sparkling"></span> Игристое</span></option>
+            <option value="both"><span class="drink-option"><span class="drink-dot wine"></span><span class="drink-dot sparkling"></span> И то, и другое</span></option>
             <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group" id="drink-color-block" style="display:none;">
+          <label>Цвет напитка 🎨</label>
+          <select id="rsvp-drink-color">
+            <option value="">-- Выберите цвет --</option>
+            <option value="red"><span class="drink-option"><span class="drink-color-dot red"></span> Красное</span></option>
+            <option value="white"><span class="drink-option"><span class="drink-color-dot white"></span> Белое</span></option>
+            <option value="rose"><span class="drink-option"><span class="drink-color-dot rose"></span> Розовое</span></option>
           </select>
         </div>
         <div class="form-group" id="sweetness-block" style="display:none;">
@@ -718,10 +761,6 @@
             <option value="semi-sweet">Полусладкое</option>
             <option value="sweet">Сладкое</option>
           </select>
-        </div>
-        <div class="form-group">
-          <label>Пожелания по еде / Аллергии</label>
-          <textarea id="rsvp-food" rows="2" placeholder="Например: не ем рыбу"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Отправить ответ ✨</button>
       </form>
@@ -959,14 +998,19 @@ async function uploadPhotos() {
 }
 
 /* =========================================
-   🍷 RSVP - SWEETNESS
+   🍷 RSVP - DRINK OPTIONS
    ========================================= */
-function toggleSweetness() {
+function toggleDrinkOptions() {
   const drinks = document.getElementById('rsvp-drinks').value;
+  const colorBlock = document.getElementById('drink-color-block');
   const sweetnessBlock = document.getElementById('sweetness-block');
+  
+  // Показываем выбор цвета только для вина и игристого
   if (drinks === 'wine' || drinks === 'sparkling' || drinks === 'both') {
+    colorBlock.style.display = 'block';
     sweetnessBlock.style.display = 'block';
   } else {
+    colorBlock.style.display = 'none';
     sweetnessBlock.style.display = 'none';
   }
 }
@@ -981,6 +1025,7 @@ function selectAtt(val, btn) {
   document.getElementById('guests-block').style.display = val === 'yes' ? 'block' : 'none';
   document.getElementById('drinks-block').style.display = val === 'yes' ? 'block' : 'none';
   if (val === 'no') {
+    document.getElementById('drink-color-block').style.display = 'none';
     document.getElementById('sweetness-block').style.display = 'none';
   }
 }
@@ -991,8 +1036,8 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
   const att = document.getElementById('rsvp-att').value;
   const guests = document.getElementById('rsvp-guests').value;
   const drinks = document.getElementById('rsvp-drinks').value;
+  const drinkColor = document.getElementById('rsvp-drink-color').value;
   const sweetness = document.getElementById('rsvp-sweetness').value;
-  const food = document.getElementById('rsvp-food').value;
 
   if(!att) { alert('Выберите вариант участия!'); return; }
 
@@ -1008,6 +1053,11 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
   else if (drinks === 'both') drinksText = '🍷🥂 И то, и другое';
   else drinksText = '📝 Другое';
 
+  let colorText = '';
+  if (drinkColor === 'red') colorText = '🔴 Красное';
+  else if (drinkColor === 'white') colorText = '⚪ Белое';
+  else if (drinkColor === 'rose') colorText = '🌸 Розовое';
+
   let sweetnessText = '';
   if (sweetness === 'dry') sweetnessText = 'Сухое';
   else if (sweetness === 'semi-dry') sweetnessText = 'Полусухое';
@@ -1020,8 +1070,8 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
 📝 <b>Статус:</b> ${status}
 👥 <b>Гостей:</b> ${att === 'yes' ? guests : 0}
 🍷 <b>Напитки:</b> ${att === 'yes' ? drinksText : '-'}
+🎨 <b>Цвет:</b> ${att === 'yes' && colorText ? colorText : '-'}
 🍇 <b>Сладость:</b> ${att === 'yes' && sweetnessText ? sweetnessText : '-'}
-🍽 <b>Еда:</b> ${food || 'Нет'}
   `.trim();
 
   if (CONFIG.TG_BOT_TOKEN && CONFIG.TG_CHAT_ID) {
@@ -1041,7 +1091,7 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
   }
 
   const localData = JSON.parse(localStorage.getItem('rsvp') || '[]');
-  localData.push({ name, att, guests, drinks, sweetness, food, date: new Date() });
+  localData.push({ name, att, guests, drinks, drinkColor, sweetness, date: new Date() });
   localStorage.setItem('rsvp', JSON.stringify(localData));
 
   document.getElementById('rsvpForm').style.display = 'none';
@@ -1095,7 +1145,7 @@ window.addEventListener('resize', () => {
 });
 
 /* =========================================
-   📱 MOBILE SCROLL FIX (ИСПРАВЛЕНО)
+   📱 MOBILE SCROLL FIX
    ========================================= */
 let scrollLocked = false;
 let scrollPosition = 0;
