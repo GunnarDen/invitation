@@ -88,39 +88,6 @@
       margin-top: 10px;
     }
 
-    /* --- NAV BUTTONS (INLINE) --- */
-    .nav-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 20px;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-buttons a {
-      font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-decoration: none;
-      color: #777;
-      padding: 8px 16px;
-      border-radius: 30px;
-      background: white;
-      border: 2px solid #eee;
-      transition: all 0.3s;
-    }
-    .nav-buttons a:hover {
-      background: var(--pink);
-      color: white;
-      border-color: var(--pink);
-      transform: scale(1.05);
-    }
-
     /* --- SECTIONS --- */
     section {
       padding: 80px 20px 60px;
@@ -559,8 +526,6 @@
       section { padding: 60px 16px 40px; }
       .form-box, .upload-box { padding: 25px; }
       .hero-dopamine { font-size: 18vw; }
-      .nav-buttons { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 15px; }
-      .nav-buttons a { flex-shrink: 0; }
       .tl-item { grid-template-columns: 1fr; gap: 8px; padding: 12px 15px; text-align: center; }
       .tl-desc { text-align: center; }
       .grid-cards { grid-template-columns: 1fr; }
@@ -578,17 +543,6 @@
 
 <canvas id="confetti-canvas"></canvas>
 <div class="floating-bg" id="floatingBg"></div>
-
-<!-- NAV BUTTONS (Вместо фиксированного навбара) -->
-<div class="nav-buttons">
-  <a href="#hero">Главная</a>
-  <a href="#details">Детали</a>
-  <a href="#program">Программа</a>
-  <a href="#dresscode">Дресс-код</a>
-  <a href="#location">Как добраться</a>
-  <a href="#photos">Фото</a>
-  <a href="#rsvp">RSVP</a>
-</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -884,7 +838,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const targetId = this.getAttribute('href');
     const target = document.querySelector(targetId);
     if (target) {
-      const navHeight = document.querySelector('.nav-buttons').offsetHeight;
+      // Навбара больше нет, поэтому navHeight = 0
+      const navHeight = 0; 
       const targetPosition = target.offsetTop - navHeight - 20;
       window.scrollTo({ top: targetPosition, behavior: 'smooth' });
     }
