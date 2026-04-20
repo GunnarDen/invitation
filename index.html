@@ -88,53 +88,42 @@
       margin-top: 10px;
     }
 
-    /* --- NAV - FIXED POSITION --- */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
+    /* --- NAV BUTTONS (INLINE) --- */
+    .nav-buttons {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      gap: 10px;
+      padding: 20px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-    nav .nav-inner {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      max-width: 100%;
-      padding: 4px 8px;
-      -webkit-overflow-scrolling: touch;
-    }
-    nav .nav-inner::-webkit-scrollbar { display: none; }
-    nav a {
+    .nav-buttons a {
       font-family: 'Caveat', cursive;
       font-size: 1.1rem;
       font-weight: 700;
       text-decoration: none;
       color: #777;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 30px;
-      white-space: nowrap;
+      background: white;
+      border: 2px solid #eee;
       transition: all 0.3s;
-      flex-shrink: 0;
     }
-    nav a:hover, nav a.active {
+    .nav-buttons a:hover {
       background: var(--pink);
       color: white;
+      border-color: var(--pink);
       transform: scale(1.05);
     }
 
     /* --- SECTIONS --- */
     section {
-      padding: 120px 20px 60px;
+      padding: 80px 20px 60px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -152,7 +141,7 @@
     }
 
     /* --- HERO --- */
-    #hero { text-align: center; padding-top: 140px; }
+    #hero { text-align: center; padding-top: 100px; }
     .hero-subtitle {
       font-family: 'Caveat', cursive;
       font-size: 1.8rem;
@@ -380,11 +369,12 @@
       border: 2px solid #eee;
       border-radius: 15px;
       font-family: 'Nunito', sans-serif;
-      font-size: 1rem;
+      font-size: 16px; /* Важно для iOS - предотвращает зум */
       transition: border-color 0.3s;
       background: #FAFAFA;
+      -webkit-appearance: none;
     }
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--blue);
       background: white;
@@ -566,11 +556,11 @@
 
     /* --- MOBILE --- */
     @media (max-width: 600px) {
-      section { padding: 100px 16px 40px; }
+      section { padding: 60px 16px 40px; }
       .form-box, .upload-box { padding: 25px; }
       .hero-dopamine { font-size: 18vw; }
-      nav { padding: 10px 12px; }
-      nav a { font-size: 0.95rem; padding: 6px 12px; }
+      .nav-buttons { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 15px; }
+      .nav-buttons a { flex-shrink: 0; }
       .tl-item { grid-template-columns: 1fr; gap: 8px; padding: 12px 15px; text-align: center; }
       .tl-desc { text-align: center; }
       .grid-cards { grid-template-columns: 1fr; }
@@ -589,18 +579,16 @@
 <canvas id="confetti-canvas"></canvas>
 <div class="floating-bg" id="floatingBg"></div>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <a href="#hero">Главная</a>
-    <a href="#details">Детали</a>
-    <a href="#program">Программа</a>
-    <a href="#dresscode">Дресс-код</a>
-    <a href="#location">Как добраться</a>
-    <a href="#photos">Фото</a>
-    <a href="#rsvp">RSVP</a>
-  </div>
-</nav>
+<!-- NAV BUTTONS (Вместо фиксированного навбара) -->
+<div class="nav-buttons">
+  <a href="#hero">Главная</a>
+  <a href="#details">Детали</a>
+  <a href="#program">Программа</a>
+  <a href="#dresscode">Дресс-код</a>
+  <a href="#location">Как добраться</a>
+  <a href="#photos">Фото</a>
+  <a href="#rsvp">RSVP</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -830,7 +818,7 @@ const CONFIG = {
   TG_BOT_TOKEN: '8698697175:AAH1BPfdwKIjnvopE0USkF2sr0nMvozDTJs',
   TG_CHAT_ID: '26425660',
   CARD_NUMBER: '2202 2069 5439 4065',
-  UPLOAD_URL: 'https://your-nas-ip/php/upload.php' // Замените на ваш NAS
+  UPLOAD_URL: 'https://your-nas-ip/php/upload.php'
 };
 
 /* =========================================
@@ -888,52 +876,16 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
 
 /* =========================================
-   🧭 NAVIGATION - FIXED
+   🧭 SMOOTH SCROLL
    ========================================= */
-let lastScrollY = window.scrollY;
-let ticking = false;
-
-window.addEventListener('scroll', () => {
-  lastScrollY = window.scrollY;
-  if (!ticking) {
-    window.requestAnimationFrame(() => {
-      updateNavigation();
-      ticking = false;
-    });
-    ticking = true;
-  }
-});
-
-function updateNavigation() {
-  let current = '';
-  const sections = document.querySelectorAll('section');
-  const navLinks = document.querySelectorAll('nav a');
-  
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    const sectionHeight = section.offsetHeight;
-    if (lastScrollY >= sectionTop && lastScrollY < sectionTop + sectionHeight) {
-      current = section.getAttribute('id');
-    }
-  });
-
-  navLinks.forEach(link => {
-    link.classList.remove('active');
-    if (link.getAttribute('href') === '#' + current) {
-      link.classList.add('active');
-    }
-  });
-}
-
-// Плавный скролл по якорям
-document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     e.preventDefault();
     const targetId = this.getAttribute('href');
     const target = document.querySelector(targetId);
     if (target) {
-      const navHeight = document.querySelector('nav').offsetHeight;
-      const targetPosition = target.offsetTop - navHeight - 10;
+      const navHeight = document.querySelector('.nav-buttons').offsetHeight;
+      const targetPosition = target.offsetTop - navHeight - 20;
       window.scrollTo({ top: targetPosition, behavior: 'smooth' });
     }
   });
@@ -1089,12 +1041,9 @@ function toggleSweetness() {
 }
 
 /* =========================================
-   ✅ RSVP - FORM
+   ✅ RSVP - FORM (FIXED SCROLL)
    ========================================= */
 function selectAtt(val, btn) {
-  event.preventDefault();
-  event.stopPropagation();
-  const scrollPos = window.scrollY;
   document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('rsvp-att').value = val;
@@ -1103,7 +1052,6 @@ function selectAtt(val, btn) {
   if (val === 'no') {
     document.getElementById('sweetness-block').style.display = 'none';
   }
-  setTimeout(() => { window.scrollTo(0, scrollPos); }, 50);
 }
 
 document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
@@ -1215,10 +1163,28 @@ window.addEventListener('resize', () => {
   canvas.height = window.innerHeight;
 });
 
-document.querySelectorAll('input, select, textarea').forEach(el => {
+/* =========================================
+   📱 MOBILE SCROLL FIX
+   ========================================= */
+// Предотвращаем скролл при фокусе на полях
+let scrollLocked = false;
+let scrollPosition = 0;
+
+document.querySelectorAll('input, textarea, select').forEach(el => {
   el.addEventListener('focus', function() {
-    const scrollPos = window.scrollY;
-    setTimeout(() => { window.scrollTo(0, scrollPos); }, 50);
+    scrollLocked = true;
+    scrollPosition = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = -scrollPosition + 'px';
+    document.body.style.width = '100%';
+  });
+  
+  el.addEventListener('blur', function() {
+    scrollLocked = false;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollPosition);
   });
 });
 </script>
