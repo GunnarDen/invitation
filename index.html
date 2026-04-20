@@ -336,7 +336,7 @@
       border: 2px solid #eee;
       border-radius: 15px;
       font-family: 'Nunito', sans-serif;
-      font-size: 16px; /* Важно для iOS - предотвращает зум */
+      font-size: 16px;
       transition: border-color 0.3s;
       background: #FAFAFA;
       -webkit-appearance: none;
@@ -838,9 +838,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const targetId = this.getAttribute('href');
     const target = document.querySelector(targetId);
     if (target) {
-      // Навбара больше нет, поэтому navHeight = 0
-      const navHeight = 0; 
-      const targetPosition = target.offsetTop - navHeight - 20;
+      const targetPosition = target.offsetTop - 20;
       window.scrollTo({ top: targetPosition, behavior: 'smooth' });
     }
   });
@@ -996,7 +994,7 @@ function toggleSweetness() {
 }
 
 /* =========================================
-   ✅ RSVP - FORM (FIXED SCROLL)
+   ✅ RSVP - FORM
    ========================================= */
 function selectAtt(val, btn) {
   document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
@@ -1119,29 +1117,39 @@ window.addEventListener('resize', () => {
 });
 
 /* =========================================
-   📱 MOBILE SCROLL FIX
+   📱 MOBILE SCROLL FIX (ИСПРАВЛЕНО)
    ========================================= */
-// Предотвращаем скролл при фокусе на полях
+// Исправленная версия - только для iOS и только для текстовых полей
 let scrollLocked = false;
 let scrollPosition = 0;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-document.querySelectorAll('input, textarea, select').forEach(el => {
-  el.addEventListener('focus', function() {
-    scrollLocked = true;
-    scrollPosition = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = -scrollPosition + 'px';
-    document.body.style.width = '100%';
-  });
+// Применяем фикс только для iOS и только к текстовым полям
+if (isIOS) {
+  const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
   
-  el.addEventListener('blur', function() {
-    scrollLocked = false;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    window.scrollTo(0, scrollPosition);
+  textInputs.forEach(el => {
+    el.addEventListener('focus', function() {
+      scrollLocked = true;
+      scrollPosition = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = -scrollPosition + 'px';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    }, { passive: true });
+    
+    el.addEventListener('blur', function() {
+      if (scrollLocked) {
+        scrollLocked = false;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollPosition);
+      }
+    }, { passive: true });
   });
-});
+}
 </script>
 </body>
 </html>
